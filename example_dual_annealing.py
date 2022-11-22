@@ -3,6 +3,7 @@ from scipy.optimize import dual_annealing
 
 from irace import irace
 from irace import r_to_python
+from irace import Parameters, Real, Categorical, Param
 
 DIM=10 # This works even with parallel
 LB = [-5.12]
@@ -18,14 +19,13 @@ def target_runner(experiment, scenario, lb = LB, ub = UB):
                          **experiment['configuration'])
     return dict(cost=ret.fun)
 
-parameters_table = '''
-initial_temp       "" r,log (0.02, 5e4)
-restart_temp_ratio "" r,log (1e-5, 1)
-visit              "" r     (1.001, 3)
-accept             "" r     (-1e3, -5)
-# TODO: irace does not have a type boolean yet.
-no_local_search    "" c     ("","1") 
-'''
+parameters = Parameters()
+
+parameters.initial_temp = Param(Real(0.02, 5e4, log=True))
+parameters.restart_temp_ratio = Param(Real(1e-5, 1, log=True))
+parameters.visit = Param(Real(1.001, 3))
+parameters.accept = Param(Real(-1e3, -5))
+parameters.no_local_search = Param(Categorical(("", "1")))
 
 default_values = '''
 initial_temp restart_temp_ratio visit accept no_local_search
@@ -40,12 +40,11 @@ scenario = dict(
     instances = instances,
     maxExperiments = 500,
     debugLevel = 3,
-    digits = 5,
     parallel=2, # It can run in parallel ! 
     logFile = "")
 
 
-tuner = irace(scenario, parameters_table, target_runner)
+tuner = irace(scenario, parameters, target_runner)
 tuner.set_initial_from_str(default_values)
 best_confs = tuner.run()
 # Pandas DataFrame
