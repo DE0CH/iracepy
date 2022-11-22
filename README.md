@@ -1,5 +1,5 @@
-[![Python Test](https://github.com/auto-optimization/iracepy/actions/workflows/test.yml/badge.svg)](https://github.com/auto-optimization/iracepy/actions/workflows/test.yml)
-[![codecov Badge](https://codecov.io/gh/auto-optimization/iracepy/branch/main/graph/badge.svg)](https://codecov.io/gh/auto-optimization/iracepy)
+[![Python Test](https://github.com/de0ch/iracepy/actions/workflows/test.yml/badge.svg)](https://github.com/de0ch/iracepy/actions/workflows/test.yml)
+[![codecov Badge](https://codecov.io/gh/de0ch/iracepy/branch/main/graph/badge.svg)](https://codecov.io/gh/de0ch/iracepy)
 
 
 # Example of using irace from Python. #
@@ -13,7 +13,7 @@ Unfortunately, I do not have enough time to extend and maintain iracepy on my ow
   1. Install R: https://github.com/MLopez-Ibanez/irace#installing-r
   1. Install python packages:
       ```bash
-      pip install git+https://github.com/auto-optimization/iracepy@main
+      pip install git+https://github.com/de0ch/iracepy@main
       ```
   1. Install R packages with 
       ```bash
