@@ -14,6 +14,10 @@ from rpy2.robjects.vectors import DataFrame, BoolVector, FloatVector, IntVector,
 from rpy2.robjects.functions import SignatureTranslatedFunction
 from rpy2.robjects import NA_Character
 
+# Re export useful Functions
+from .expression import Symbol, Min, Max, Round, Floor, Ceiling, Trunc, In, List
+from .parameters import Integer, Real, Ordinal, Categorical, Param, Parameters
+
 base = importr('base')
 
 def r_to_python(data):
