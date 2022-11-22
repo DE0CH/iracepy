@@ -1,4 +1,4 @@
-from .errors import irace_assert
+from .errors import irace_assert, check_illegal_character
 import re
 from typing import Iterable
 from rpy2.robjects.packages import importr
@@ -68,15 +68,15 @@ class Expr:
     def __mod__(self, other):
         return Mod(self, other)
 
-    def contains(self, element):
-        return In(element, self)
-
 class List(Expr):
     def __init__(self, element: Iterable):
         self.data = TaggedList(list(element))
 
     def __repr__(self):
         return dputpy(self.data).r_repr()
+    
+    def contains(self, element):
+        return In(element, self)
 
 class Singular(Expr):
     def __init__(self, element):
@@ -101,10 +101,14 @@ class BinaryRelations(Expr):
 
 class Symbol(Singular):
     def __init__(self, name):
-        irace_assert(re.match("^[_a-zA-Z0-9]+$", name), "symbol name container illegal character")
+        check_illegal_character(name)
         super().__init__(name)
     
     def __repr__(self):
+        return self.element
+    
+    @property
+    def name(self):
         return self.element
 
 
@@ -161,10 +165,12 @@ class Or(Symmetric):
 
 class And(Symmetric):
     def __init__(self, left, right):
+        super().__init__(left, right)
         self.center_op = '&'
 
 class In(BinaryRelations):
     def __init__(self, left, right):
+        irace_assert(isinstance(right, List), f"expected a irace.expressions.List, but found {type(right)}")
         super().__init__(left, right)
         self.center_op = '%in%'
 
