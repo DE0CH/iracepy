@@ -1,11 +1,11 @@
 from enum import Enum
 from typing import Iterable, Union
-from .error import irace_assert, check_numbers
+from .errors import irace_assert, check_numbers
 import re
 from rpy2.robjects.packages import importr
 from rpy2.robjects.vectors import StrVector, IntArray, FloatArray
 from rpy2.rlike.container import TaggedList
-from .expression import Expr, True_
+from .expressions import Expr, True_
 
 base = importr('base')
 irace_pkg = importr('irace')
