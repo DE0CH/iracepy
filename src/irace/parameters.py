@@ -84,7 +84,7 @@ class Ordinal(ParameterDomain):
         self.domain.append(element)
     
     def export(self):
-        self.domain = list(map(lambda x: repr(x) if isinstance(x, Expr) else str(x), self.domain))
+        self.domain = list(map(lambda x: repr(x) if isinstance(x, Expr) else x, self.domain))
         return StrVector(self.domain)
 
 class Param:

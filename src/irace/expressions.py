@@ -2,7 +2,7 @@ from .errors import irace_assert, check_illegal_character
 import re
 from typing import Iterable
 from rpy2.robjects.packages import importr
-from rpy2.rlike.container import TaggedList
+from rpy2.robjects import StrVector
 from rpy2 import robjects
 from rpy2.rinterface import evalr_expr
 
@@ -71,12 +71,14 @@ class Expr:
 class List:
     def __init__(self, element: Iterable):
         self.data = list(element)
+        for e in self.data:
+            irace_assert(isinstance(e, str), "Elements can only be strings.")
 
     def __repr__(self):
-        return dputpy(self.export()).r_repr()
+        return self.export().r_repr()
     
     def export(self):
-        return TaggedList(self.data)
+        return StrVector(self.data)
     
     def contains(self, element):
         return In(element, self)

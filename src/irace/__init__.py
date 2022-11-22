@@ -19,6 +19,10 @@ from .errors import irace_assert
 from .expressions import Symbol, Min, Max, Round, Floor, Ceiling, Trunc, In, List
 from .parameters import Integer, Real, Ordinal, Categorical, Param, Parameters
 
+# Re export useful Functions
+from .expressions import Symbol, Min, Max, Round, Floor, Ceiling, Trunc, In, List
+from .parameters import Integer, Real, Ordinal, Categorical, Param, Parameters
+
 base = importr('base')
 
 def r_to_python(data):
