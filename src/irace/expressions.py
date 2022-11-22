@@ -68,12 +68,15 @@ class Expr:
     def __mod__(self, other):
         return Mod(self, other)
 
-class List(Expr):
+class List:
     def __init__(self, element: Iterable):
-        self.data = TaggedList(list(element))
+        self.data = list(element)
 
     def __repr__(self):
-        return dputpy(self.data).r_repr()
+        return dputpy(self.export()).r_repr()
+    
+    def export(self):
+        return TaggedList(self.data)
     
     def contains(self, element):
         return In(element, self)

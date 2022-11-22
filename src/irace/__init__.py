@@ -13,6 +13,7 @@ import rpy2.rinterface as ri
 from rpy2.robjects.vectors import DataFrame, BoolVector, FloatVector, IntVector, StrVector, ListVector, IntArray, Matrix, ListSexpVector,FloatSexpVector,IntSexpVector,StrSexpVector,BoolSexpVector
 from rpy2.robjects.functions import SignatureTranslatedFunction
 from rpy2.robjects import NA_Character
+from .errors import irace_assert
 
 # Re export useful Functions
 from .expressions import Symbol, Min, Max, Round, Floor, Ceiling, Trunc, In, List
@@ -76,6 +77,7 @@ class irace:
     
     def __init__(self, scenario, parameters: Parameters, target_runner):
         self.scenario = scenario
+        irace_assert(isinstance(parameters, Parameters), f"parameters needs to be type irace.Parameters, but {type(parameters)} is found.")
         self.parameters = parameters._export()
         # IMPORTANT: We need to save this in a variable or it will be garbage
         # collected by Python and crash later.
