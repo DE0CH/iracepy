@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import traceback
 import warnings
+from typing import Union
 
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr, PackageNotInstalledError
@@ -15,6 +16,13 @@ from rpy2.rinterface_lib.sexp import NACharacterType
 from rpy2.robjects.vectors import DataFrame, BoolVector, FloatVector, IntVector, StrVector, ListVector, IntArray, Matrix, ListSexpVector,FloatSexpVector,IntSexpVector,StrSexpVector,BoolSexpVector
 from rpy2.robjects.functions import SignatureTranslatedFunction
 from rpy2.rinterface import RRuntimeWarning
+from .errors import irace_assert
+import json
+
+# Re export useful Functions
+from .expressions import Symbol, Min, Max, Round, Floor, Ceiling, Trunc, In, List
+from .parameters import Integer, Real, Ordinal, Categorical, Param, Parameters
+
 
 rpy2conversion = ro.conversion.get_conversion()
 irace_converter =  ro.default_converter + numpy2ri.converter + pandas2ri.converter
@@ -83,6 +91,7 @@ def make_target_runner(context):
         py_experiment['configuration'] = OrderedDict(
             (k,v) for k,v in py_experiment['configuration'].items() if not pd.isna(v)
         )
+        py_experiment['instance'] = context['py_instances'][int(py_experiment['id.instance']) - 1]
         try:
             ret = context['py_target_runner'](py_experiment, py_scenario)
         except:
@@ -94,7 +103,6 @@ def make_target_runner(context):
 def check_windows(scenario):
     if scenario.get('parallel', 1) != 1 and os.name == 'nt':
         raise NotImplementedError('Parallel running on windows is not supported yet. Follow https://github.com/auto-optimization/iracepy/issues/16 for updates. Alternatively, use Linux or MacOS or the irace R package directly.')
-
 class irace:
     # Import irace R package
     try:
@@ -105,14 +113,27 @@ class irace:
     except PackageNotInstalledError as e:
         raise PackageNotInstalledError('The R package irace needs to be installed for this python binding to work. Consider running `Rscript -e "install.packages(\'irace\', repos=\'https://cloud.r-project.org\')"` in your shell. See more details at https://github.com/mLopez-Ibanez/irace#quick-start') from e
 
-    def __init__(self, scenario, parameters_table, target_runner):
+    def __init__(self, scenario, parameters: Union[Parameters, str], target_runner):
         self.scenario = scenario
+        self.instances = scenario.get('instances', None)
+        self.context = {}
         if 'instances' in scenario:
-            self.scenario['instances'] = np.asarray(scenario['instances'])
-        with localconverter(irace_converter_hack):
-            self.parameters = self._pkg.readParameters(text = parameters_table, digits = self.scenario.get('digits', 4))
-        self.context = {'py_target_runner' : target_runner,
-                        'py_scenario': self.scenario }
+            self.context.update({
+                'py_instances': self.scenario['instances'],
+            })
+            self.scenario['instances'] = StrVector(list(map(lambda x: json.dumps(x, skipkeys=True, default=self.scenario.get('instanceObjectSerializer', lambda x: '<not serializable>')), self.scenario['instances'])))
+            self.scenario.pop('instanceObjectSerializer', None)
+        if isinstance(parameters, Parameters):
+            self.parameters = parameters._export()
+        elif isinstance(parameters, str):
+            with localconverter(irace_converter_hack):
+                self.parameters = self._pkg.readParameters(text = parameters, digits = self.scenario.get('digits', 4))
+        else:
+            raise ValueError(f"parameters needs to be type irace.Parameters or string, but {type(parameters)} is found.")
+        self.context.update({
+            'py_target_runner' : target_runner,
+            'py_scenario': self.scenario,
+        })
         check_windows(scenario)
 
     def read_configurations(self, filename=None, text=None):
