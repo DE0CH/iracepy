@@ -87,6 +87,9 @@ class Param:
     def __init__(self, domain: ParameterDomain, condition: Expr = True_()):
         self.domain = domain
         self.condition = condition
+    
+    def set_condition(self, condition: Expr):
+        self.condition = condition
 
 class Parameters:
     def __init__(self):
@@ -100,6 +103,7 @@ class Parameters:
         conditions = []
         for attr in dir(self):
             if not re.match("^__.+__$", attr) and not re.match('^_export$', attr):
+                irace_assert(isinstance(getattr(self, attr), Param), f"The parameter has to be of type Param, but found {type(getattr(self, attr))}")
                 names.append(attr)
                 types.append(getattr(self, attr).domain.type.value)
                 switches.append('')
