@@ -58,6 +58,8 @@ class Categorical(ParameterDomain):
             self.domain = set(domain)
             self.type = ParameterType.CATEGORICAL
             irace_assert(len(self.domain) == len(list(domain)), "domain has duplicate elements")
+            for d in domain:
+                irace_assert(isinstance(d, Expr) or isinstance(d, str), "domain element must be either string or expression (irace.expressions.Expr)")
         else:
             self.domain = set()
 
@@ -73,6 +75,8 @@ class Ordinal(ParameterDomain):
         if domain:
             self.domain = list(domain)
             self.type = ParameterType.ORDINAL
+            for d in domain:
+                irace_assert(isinstance(d, Expr) or isinstance(d, str), "domain element must be either string or expression (irace.expressions.Expr)")
             irace_assert(len(set(self.domain)) == len(self.domain), "domain has duplicate elements")
         else:
             self.domain = list()
@@ -80,7 +84,7 @@ class Ordinal(ParameterDomain):
         self.domain.append(element)
     
     def export(self):
-        self.domain = list(map(lambda x: repr(x) if isinstance(x, Expr) else x, self.domain))
+        self.domain = list(map(lambda x: repr(x) if isinstance(x, Expr) else str(x), self.domain))
         return StrVector(self.domain)
 
 class Param:

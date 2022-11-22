@@ -5,7 +5,7 @@ base = importr('base')
 parameters = Parameters()
 
 parameters.algorithm = Param(Categorical(('as', 'mmas', 'eas', 'ras', 'acs')))
-parameters.localsearch = Param(Categorical((0, 1, 2, 3)))
+parameters.localsearch = Param(Categorical(('0', '1', '2', '3')))
 parameters.alpha = Param(Real(0, 5))
 parameters.beta = Param(Real(0, 10))
 parameters.rho = Param(Real(0.01, 1))
