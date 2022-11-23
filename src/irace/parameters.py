@@ -116,7 +116,7 @@ class Parameters:
         
         names = StrVector(names)
         types = StrVector(types)
-        switches = StrVector(types)
+        switches = StrVector(switches)
         domain = TaggedList(domain)
         conditions = TaggedList(conditions)
         return irace_pkg.readParametersData(names = names, types = types, switches = switches, domain = domain, conditions = conditions)
